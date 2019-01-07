@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/qrcode.js"></script>
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/142/gjxgxu0g/qrgen.min.js"></script>
+    <title>TAL二维码</title>
+
+
+</head>
+<body>
+<div id="box">
+    <input id="text" type="text" value="http://www.100tal.com?a=1&&b=2&&c=3" style="width:100%" /><br/>
+    <div id="qrcode" style="width:400px; height:400px; margin-top:15px;background-color: #a4a4ae"></div>
+</div>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        var boxList=new Vue({
+            el:"#box",
+            data:{
+                status:"",
+            },
+            beforeMount:function(){
+
+            },
+            mounted(){
+                this.makeCode();
+                qrcode(document.getElementById('qrcode'),{
+                    data:'http://geraldl.net'
+                });
+            },
+        methods:{
+            makeCode:function () {
+                var elText = document.getElementById("text");
+                if (!elText.value) {
+                    elText.focus();
+                    return;
+                }
+
+                var qrcodes = new QRCode(document.getElementById("qrcode"), {
+                    render: "canvas", //设置渲染方式，有table和canvas
+                    tex: 'TALer',
+                    width: 256,
+                    height: 256,
+                    colorDark : '#000000',
+                    colorLight : '#ff4845',
+                    correctLevel : QRCode.CorrectLevel.H,
+                    background : "#3cda13", //二维码的后景色
+                    foreground : "#000000", //二维码的前景色
+                    src: 'js/logo.png', //二维码中间的图片
+
+                });
+
+                // 使用 API
+                qrcodes.clear();
+                qrcodes.makeCode(elText.value);
+            },
+
+            refreshCount:function(){
+
+                var _self = this;
+                //这里是获取最新的map视图
+                $.ajax({
+                    type: "GET",
+                    url: "http://yapi.talbrain.com/mock/175/epg-bi/get-tableau-html",
+                    data: { bi_code: "epg-bi-big-screen-v0"},
+                    dataType: "json",
+                    timeout: 15000,
+                    success: function (data) {
+                        if (data.msg == "success" ) {
+                            console.log(1111);
+                            // todo
+                            var elem = document.getElementById("mapShow");
+                            elem.innerHTML = "";
+                            console.log("data.data.html",data.data.html);
+                            elem.innerHTML = data.data.html;
+                        }
+                    },
+                    error: function(response) {
+                        console.log("error",response);
+                    }
+                });
+
+
+            },
+        }
+
+        })
+
+
+    });
+</script>
+</body>
+</html>
